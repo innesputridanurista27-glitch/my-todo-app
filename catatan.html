@@ -5,90 +5,216 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catatan Harian</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #9b59b6; --bg-gradient: linear-gradient(135deg, #f1c40f 0%, #ff8c00 100%); }
+        :root { 
+            --primary: #9b59b6; 
+            --bg-gradient: linear-gradient(135deg, #f1c40f 0%, #ff8c00 100%); 
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --inner-card: #ffffff;
+            --text-main: #2c3e50;
+            --text-sub: #95a5a6;
+            --border-color: #eee;
+            --sidebar-bg: #2c3e50;
+        }
+
+        /* --- DARK MODE OVERRIDE --- */
+        body.dark-mode {
+            --bg-gradient: linear-gradient(135deg, #2c003e 0%, #000000 100%);
+            --card-bg: #1f4068;
+            --inner-card: #16213e;
+            --text-main: #e0e0e0;
+            --text-sub: #a0a0a0;
+            --border-color: #34495e;
+            --sidebar-bg: #0f3460;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--bg-gradient); min-height: 100vh; padding: 20px; display: flex; justify-content: center; }
         
-        /* Sidebar & Layout */
-        .menu-btn { position: fixed; top: 20px; left: 20px; font-size: 24px; cursor: pointer; z-index: 1000; background: white; padding: 5px 12px; border-radius: 12px; color: #d35400; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100%; background: #2c3e50; transition: 0.4s; z-index: 999; padding-top: 80px; }
+        body { 
+            background: var(--bg-gradient); 
+            min-height: 100vh; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; /* Ubah ke column agar footer di bawah */
+            align-items: center; 
+            transition: all 0.3s ease; 
+        }
+        
+        /* --- UI COMPONENTS --- */
+        .menu-btn { 
+            position: fixed; top: 20px; left: 20px; font-size: 24px; cursor: pointer; 
+            z-index: 1000; background: white; padding: 5px 12px; border-radius: 12px; 
+            color: #d35400; box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+        }
+
+        .sidebar { 
+            position: fixed; top: 0; left: -260px; width: 260px; height: 100%; 
+            background: var(--sidebar-bg); transition: 0.4s; z-index: 999; padding-top: 80px; 
+        }
+
         .sidebar.active { left: 0; }
-        .sidebar a { display: flex; justify-content: space-between; align-items: center; padding: 18px 25px; color: #ecf0f1; text-decoration: none; border-bottom: 1px solid #34495e; font-size: 14px; }
+
+        .sidebar a { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 18px 25px; color: #ecf0f1; text-decoration: none; 
+            border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 14px; 
+        }
+
         .badge { color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
 
-        .container { width: 100%; max-width: 480px; margin-top: 60px; background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); height: fit-content; }
+        .container { 
+            width: 100%; max-width: 480px; margin-top: 60px; background: var(--card-bg); 
+            padding: 30px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); 
+            height: fit-content; transition: 0.3s; color: var(--text-main); 
+        }
+
         header h2 { text-align: center; color: var(--primary); margin-bottom: 20px; }
 
-        /* Form Catatan */
-        textarea { width: 100%; height: 120px; padding: 15px; border-radius: 15px; border: 2px solid #eee; outline: none; resize: none; margin-bottom: 10px; transition: 0.3s; font-size: 14px; }
+        /* --- SEARCH & INPUT --- */
+        .search-container { margin-bottom: 15px; position: relative; }
+
+        .search-container input { 
+            width: 100%; padding: 12px 15px 12px 40px; border-radius: 12px; 
+            border: 1px solid var(--border-color); background: var(--inner-card); 
+            color: var(--text-main); font-size: 13px; outline: none; transition: 0.3s;
+        }
+
+        .search-container input:focus { border-color: var(--primary); }
+
+        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); opacity: 0.5; }
+
+        textarea { 
+            width: 100%; height: 120px; padding: 15px; border-radius: 15px; 
+            border: 2px solid var(--border-color); background: var(--inner-card); 
+            color: var(--text-main); outline: none; resize: none; margin-bottom: 10px; 
+            transition: 0.3s; font-size: 14px; 
+        }
+
         textarea:focus { border-color: var(--primary); }
         
-        .btn-save { background: var(--primary); color: white; border: none; width: 100%; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600; margin-bottom: 10px; transition: 0.2s; }
+        .btn-save { 
+            background: var(--primary); color: white; border: none; width: 100%; 
+            padding: 14px; border-radius: 12px; cursor: pointer; font-weight: 600; 
+            margin-bottom: 10px; transition: 0.2s; 
+        }
+
+        .btn-save:hover { filter: brightness(1.1); }
         .btn-save:active { transform: scale(0.98); }
-        .btn-cancel { background: #bdc3c7; color: white; border: none; width: 100%; padding: 8px; border-radius: 12px; cursor: pointer; font-weight: 500; margin-bottom: 25px; display: none; }
 
-        /* Card Catatan */
-        .note-card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; border-left: 5px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative; transition: 0.3s; }
-        .note-date { font-size: 10px; color: #95a5a6; margin-bottom: 5px; }
-        .note-text { font-size: 14px; color: #2c3e50; line-height: 1.5; white-space: pre-wrap; margin-right: 40px; }
+        .btn-cancel { 
+            background: #bdc3c7; color: white; border: none; width: 100%; 
+            padding: 10px; border-radius: 12px; cursor: pointer; font-weight: 500; 
+            margin-bottom: 25px; display: none; 
+        }
+
+        /* --- NOTE CARDS --- */
+        .note-card { 
+            background: var(--inner-card); padding: 15px; border-radius: 15px; 
+            margin-bottom: 12px; border-left: 5px solid var(--primary); 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative; transition: 0.3s; 
+        }
+
+        .note-date { font-size: 10px; color: var(--text-sub); margin-bottom: 5px; }
         
-        /* Action Buttons */
-        .actions { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 8px; }
+        .note-text { 
+            font-size: 14px; color: var(--text-main); line-height: 1.6; 
+            white-space: pre-wrap; margin-right: 35px; 
+        }
+        
+        .actions { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 10px; }
+        
         .btn-action { background: none; border: none; cursor: pointer; font-size: 16px; opacity: 0.6; transition: 0.2s; }
-        .btn-action:hover { opacity: 1; }
+        
+        .btn-action:hover { opacity: 1; transform: scale(1.1); }
 
-        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: #2c3e50; color: white; padding: 12px 25px; border-radius: 12px; transition: 0.5s; opacity: 0; z-index: 10000; }
+        .toast { 
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); 
+            background: #2c3e50; color: white; padding: 12px 25px; border-radius: 12px; 
+            transition: 0.5s; opacity: 0; z-index: 10000; font-size: 13px;
+        }
+
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* --- FOOTER COPYRIGHT STYLE --- */
+        .footer-copyright {
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            padding: 25px 10px;
+            font-size: 12px;
+            color: var(--text-main);
+            opacity: 0.7;
+            width: 100%;
+            margin-top: auto; /* Memastikan footer berada di bawah */
+        }
     </style>
 </head>
 <body>
+
     <div id="toast" class="toast"></div>
     <div class="menu-btn" onclick="toggleMenu()">☰</div>
     
-    <div class="sidebar" id="sidebar">
+    <nav class="sidebar" id="sidebar">
         <a href="index.html">➕ Tambah Tugas</a>
         <a href="aktif.html"><span>⏳ Tugas Aktif</span> <span class="badge" style="background:#e67e22" id="side-aktif">0</span></a>
         <a href="selesai.html"><span>✅ Tugas Selesai</span> <span class="badge" style="background:#2ecc71" id="side-selesai">0</span></a>
         <a href="kalender.html">📅 Kalender Tugas</a>
         <a href="catatan.html" style="background: #34495e;">📝 Catatan Harian</a>
         <a href="akun.html">👤 Akun Pengguna</a>
-    </div>
+    </nav>
 
     <div class="container">
         <header><h2 id="header-title">📝 Catatan Harian</h2></header>
+
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="Cari isi catatan..." onkeyup="renderNotes()">
+        </div>
         
-        <textarea id="note-input" placeholder="Apa yang kamu pikirkan hari ini?"></textarea>
-        <button id="btn-main" class="btn-save" onclick="handleSave()">Simpan Catatan</button>
-        <button id="btn-cancel" class="btn-cancel" onclick="resetForm()">Batal Edit</button>
+        <div class="input-section">
+            <textarea id="note-input" placeholder="Apa yang kamu pikirkan hari ini?"></textarea>
+            <button id="btn-main" class="btn-save" onclick="handleSave()">Simpan Catatan</button>
+            <button id="btn-cancel" class="btn-cancel" onclick="resetForm()">Batal Edit</button>
+        </div>
 
         <div id="notes-container"></div>
     </div>
 
+    <div class="footer-copyright">
+        &copy; 2026 Innes Putri Danurista. To-Do List Application. All Rights Reserved.
+    </div>
+
     <script>
-        let editId = null; // Menyimpan ID catatan yang sedang diedit
+        let editId = null;
+
+        /* --- THEME LOGIC --- */
+        function applyTheme() {
+            const theme = localStorage.getItem('theme');
+            document.body.classList.toggle('dark-mode', theme === 'dark');
+        }
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
         
         function showToast(msg) {
-            const t = document.getElementById('toast'); t.innerText = msg;
-            t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000);
+            const t = document.getElementById('toast'); 
+            t.innerText = msg;
+            t.classList.add('show'); 
+            setTimeout(() => t.classList.remove('show'), 3000);
         }
 
-        // Fungsi gabungan untuk Simpan Baru & Perbarui
+        /* --- DATA HANDLING --- */
         function handleSave() {
             const text = document.getElementById('note-input').value.trim();
             if(!text) return showToast("Catatan tidak boleh kosong!");
             
             let notes = JSON.parse(localStorage.getItem('notes') || '[]');
+            const now = new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
             
             if (editId) {
-                // Mode Edit
-                notes = notes.map(n => n.id === editId ? { ...n, text, date: new Date().toLocaleString('id-ID') + " (diedit)" } : n);
+                notes = notes.map(n => n.id === editId ? { ...n, text, date: now + " (diedit)" } : n);
                 showToast("Catatan diperbarui! ✨");
             } else {
-                // Mode Simpan Baru
-                const newNote = { id: Date.now(), text, date: new Date().toLocaleString('id-ID') };
+                const newNote = { id: Date.now(), text, date: now };
                 notes.unshift(newNote);
                 showToast("Catatan disimpan! ✨");
             }
@@ -109,13 +235,13 @@
                 document.getElementById('btn-main').innerText = "Perbarui Catatan";
                 document.getElementById('btn-cancel').style.display = "block";
                 document.getElementById('note-input').focus();
-                window.scrollTo(0, 0); // Scroll ke atas agar form terlihat
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
 
         function deleteNote(id) {
-            if(confirm("Hapus catatan ini?")) {
-                let notes = JSON.parse(localStorage.getItem('notes') || []);
+            if(confirm("Hapus catatan ini secara permanen?")) {
+                let notes = JSON.parse(localStorage.getItem('notes') || '[]');
                 notes = notes.filter(n => n.id !== id);
                 localStorage.setItem('notes', JSON.stringify(notes));
                 if(editId === id) resetForm();
@@ -134,31 +260,46 @@
 
         function renderNotes() {
             const container = document.getElementById('notes-container');
-            const notes = JSON.parse(localStorage.getItem('notes') || '[]');
+            const searchKeyword = document.getElementById('search-input').value.toLowerCase();
+            let notes = JSON.parse(localStorage.getItem('notes') || '[]');
             const todos = JSON.parse(localStorage.getItem('todos') || '[]');
             
-            // Update Badge Sidebar
+            // Sync Sidebar Badges
             document.getElementById('side-aktif').innerText = todos.filter(t => !t.completed).length;
             document.getElementById('side-selesai').innerText = todos.filter(t => t.completed).length;
 
-            container.innerHTML = notes.length === 0 ? '<p style="text-align:center; color:#999; margin-top:20px;">Belum ada catatan hari ini.</p>' : '';
-            
-            notes.forEach(n => {
-                const card = document.createElement('div');
-                card.className = 'note-card';
-                card.innerHTML = `
+            if(searchKeyword) {
+                notes = notes.filter(n => n.text.toLowerCase().includes(searchKeyword));
+            }
+
+            if (notes.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:var(--text-sub); margin-top:30px; font-size:13px;">
+                    ${searchKeyword ? 'Catatan tidak ditemukan.' : 'Belum ada catatan hari ini. ✨'}
+                </p>`;
+                return;
+            }
+
+            container.innerHTML = notes.map(n => `
+                <div class="note-card">
                     <div class="actions">
                         <button class="btn-action" onclick="editNote(${n.id})" title="Edit">✏️</button>
                         <button class="btn-action" onclick="deleteNote(${n.id})" title="Hapus">🗑️</button>
                     </div>
                     <div class="note-date">${n.date}</div>
                     <div class="note-text">${n.text}</div>
-                `;
-                container.appendChild(card);
-            });
+                </div>
+            `).join('');
         }
 
-        document.addEventListener('DOMContentLoaded', renderNotes);
+        /* --- INITIALIZE --- */
+        document.addEventListener('DOMContentLoaded', () => {
+            applyTheme();
+            renderNotes();
+        });
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'theme') applyTheme();
+        });
     </script>
 </body>
 </html>

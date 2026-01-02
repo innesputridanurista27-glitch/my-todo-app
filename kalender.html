@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalender & Statistik Tugas</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -15,6 +16,21 @@
             --danger: #e74c3c;
             --bg-gradient: linear-gradient(135deg, #f1c40f 0%, #ff8c00 100%);
             --sidebar-bg: #2c3e50;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --inner-card: #ffffff;
+            --text-main: #2c3e50;
+            --text-sub: #7f8c8d;
+            --border-color: #eee;
+        }
+
+        body.dark-mode {
+            --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --card-bg: #1f4068;
+            --inner-card: #16213e;
+            --text-main: #e0e0e0;
+            --text-sub: #a0a0a0;
+            --border-color: #34495e;
+            --sidebar-bg: #0f3460;
         }
 
         * {
@@ -25,12 +41,16 @@
         }
 
         body {
-            background: var(--bg-gradient);
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Tambahkan ini agar konten utama mendorong footer ke bawah */
+    justify-content: flex-start; 
+    transition: background 0.3s ease;
+}
 
         /* --- UI COMPONENTS --- */
         .menu-btn {
@@ -89,25 +109,29 @@
 
         /* --- MAIN CONTAINER --- */
         .container {
-            width: 100%;
-            max-width: 480px;
-            margin-top: 60px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-            height: fit-content;
-        }
+    width: 100%;
+    max-width: 480px;
+    margin-top: 60px;
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 24px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    /* Gunakan flex-grow agar container mengambil ruang yang tersedia */
+    flex-shrink: 0; 
+    color: var(--text-main);
+    transition: background 0.3s, color 0.3s;
+    margin-bottom: 30px; /* Jarak ke footer */
+}
 
         header h2 {
             text-align: center;
-            color: var(--primary-dark);
+            color: var(--primary);
             margin-bottom: 15px;
         }
 
         /* --- STATS SECTION --- */
         .stats-container {
-            background: white;
+            background: var(--inner-card);
             border-radius: 15px;
             padding: 15px;
             margin-bottom: 20px;
@@ -157,16 +181,16 @@
             width: 100%;
             padding: 12px 15px 12px 40px;
             border-radius: 15px;
-            border: 1px solid #eee;
+            border: 1px solid var(--border-color);
+            background: var(--inner-card);
+            color: var(--text-main);
             font-size: 13px;
             outline: none;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
             transition: 0.3s;
         }
         
         #taskSearch:focus {
             border-color: var(--primary);
-            box-shadow: 0 4px 15px rgba(230, 126, 34, 0.1);
         }
 
         /* --- CALENDAR SECTION --- */
@@ -197,7 +221,7 @@
         .day-name {
             font-weight: 600;
             font-size: 12px;
-            color: #7f8c8d;
+            color: var(--text-sub);
             padding-bottom: 10px;
         }
 
@@ -213,11 +237,12 @@
             position: relative;
             transition: 0.2s;
             border: 1px solid transparent;
+            color: var(--text-main);
         }
 
-        .day:hover { background: #fdf2e9; border-color: #f39c12; }
-        .day.today { background: var(--primary); color: white; font-weight: bold; }
-        .day.selected { border: 2px solid var(--primary) !important; background: #fff; color: var(--primary); transform: scale(1.05); z-index: 5; }
+        .day:hover { background: rgba(230, 126, 34, 0.1); border-color: var(--primary); }
+        .day.today { background: var(--primary); color: white !important; font-weight: bold; }
+        .day.selected { border: 2px solid var(--primary) !important; background: var(--inner-card); color: var(--primary); transform: scale(1.05); z-index: 5; }
 
         .dots { display: flex; gap: 2px; margin-top: 2px; height: 4px; flex-wrap: wrap; justify-content: center; }
         .dot { width: 5px; height: 5px; border-radius: 50%; }
@@ -226,12 +251,12 @@
         /* --- TASK DETAILS --- */
         .task-details {
             margin-top: 25px;
-            border-top: 2px dashed #eee;
+            border-top: 2px dashed var(--border-color);
             padding-top: 20px;
         }
 
         .mini-task-card {
-            background: white;
+            background: var(--inner-card);
             padding: 12px;
             border-radius: 12px;
             margin-bottom: 10px;
@@ -242,14 +267,36 @@
             gap: 5px;
             transition: 0.3s;
             cursor: pointer;
+            color: var(--text-main);
         }
 
         .mini-card-top { display: flex; justify-content: space-between; align-items: center; }
         .status-tag { font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
-        .status-tag.aktif { background: #fff3e0; color: var(--primary); border: 1px solid #f39c12; }
-        .status-tag.selesai { background: #e8f5e9; color: var(--success); border: 1px solid var(--success); }
-        .text-completed { text-decoration: line-through; color: #95a5a6; }
-        .no-task { text-align: center; color: #bdc3c7; font-size: 13px; padding: 10px; }
+        .status-tag.aktif { background: rgba(230, 126, 34, 0.1); color: var(--primary); border: 1px solid var(--primary); }
+        .status-tag.selesai { background: rgba(46, 204, 113, 0.1); color: var(--success); border: 1px solid var(--success); }
+        .text-completed { text-decoration: line-through; color: var(--text-sub); }
+        .no-task { text-align: center; color: var(--text-sub); font-size: 13px; padding: 10px; }
+
+        /* --- COPYRIGHT STYLE --- */
+        .footer-copyright {
+    margin-top: auto; /* Mendorong footer ke paling bawah halaman */
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 11px;
+
+    /* GANTI BAGIAN INI: Menggunakan variabel agar otomatis berubah */
+    color: var(--text-main); 
+    opacity: 0.7; /* Membuatnya sedikit samar agar elegan */
+    width: 100%;
+    max-width: 480px;
+    transition: color 0.3s ease;
+    line-height: 1.6;
+}
+
+        body.dark-mode .footer-copyright {
+    color: var(--text-sub);
+    opacity: 0.9;
+}
     </style>
 </head>
 
@@ -283,7 +330,7 @@
             </div>
             <div class="stats-info">
                 <strong id="stats-month-label">Bulan Ini</strong>
-                <hr style="margin: 5px 0; border: none; border-top: 1px solid #eee;">
+                <hr style="margin: 5px 0; border: none; border-top: 1px solid var(--border-color);">
                 <div><span>⏳ Aktif:</span> <span id="stat-aktif">0</span></div>
                 <div><span>✅ Selesai:</span> <span id="stat-selesai">0</span></div>
                 <div><span>📈 Persentase:</span> <span id="stat-pct">0%</span></div>
@@ -313,16 +360,28 @@
         </section>
     </div>
 
+    <div class="footer-copyright">
+        &copy; 2026 Innes Putri Danurista. To-Do List Application. All Rights Reserved.
+    </div>
+
     <script>
-        /* --- GLOBAL VARIABLES --- */
+        /* --- SCRIPT LOGIC TETAP SAMA --- */
+        function applyTheme() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+            if (myChart) updateStatistics(); 
+        }
+
         let currentNavDate = new Date();
         let myChart = null;
 
-        /* --- DATA CORE --- */
         const getTodos = () => JSON.parse(localStorage.getItem('todos') || '[]');
         const saveTodos = (todos) => localStorage.setItem('todos', JSON.stringify(todos));
 
-        /* --- UI LOGIC --- */
         function toggleMenu() {
             document.getElementById('sidebar').classList.toggle('active');
         }
@@ -333,7 +392,6 @@
             document.getElementById('side-badge-selesai').innerText = todos.filter(t => t.completed).length;
         }
 
-        /* --- SEARCH FUNCTION --- */
         function searchTask() {
             const keyword = document.getElementById('taskSearch').value.toLowerCase();
             const days = document.querySelectorAll('.day');
@@ -363,6 +421,7 @@
                     dayEl.style.opacity = "1";
                     dayEl.style.transform = "scale(1.1)";
                     dayEl.style.zIndex = "10";
+                    dayEl.style.color = "#d35400";
                 } else {
                     dayEl.style.opacity = "0.2"; 
                     dayEl.style.background = "transparent";
@@ -373,7 +432,6 @@
             });
         }
 
-        /* --- STATISTICS & CHART --- */
         function updateStatistics() {
             const todos = getTodos();
             const month = currentNavDate.getMonth();
@@ -401,21 +459,28 @@
         function renderChart(aktif, selesai) {
             const ctx = document.getElementById('monthlyChart').getContext('2d');
             if (myChart) myChart.destroy();
+            
+            const dataAktif = (aktif === 0 && selesai === 0) ? 1 : aktif;
+            const colorAktif = (aktif === 0 && selesai === 0) ? '#ddd' : '#e67e22';
+
             myChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: ['Aktif', 'Selesai'],
                     datasets: [{
-                        data: [aktif, selesai],
-                        backgroundColor: ['#e67e22', '#2ecc71'],
+                        data: [dataAktif, selesai],
+                        backgroundColor: [colorAktif, '#2ecc71'],
                         borderWidth: 0
                     }]
                 },
-                options: { cutout: '70%', plugins: { legend: { display: false } } }
+                options: { 
+                    cutout: '70%', 
+                    plugins: { legend: { display: false } },
+                    animation: { duration: 500 }
+                }
             });
         }
 
-        /* --- CALENDAR LOGIC --- */
         function renderCalendar() {
             const grid = document.getElementById('calendar-grid');
             const todos = getTodos();
@@ -469,64 +534,63 @@
             document.getElementById('selected-date-text').innerText = 'Klik tanggal untuk detail tugas';
         }
 
-        /* --- UPDATE FUNGSI showTasksForDay --- */
-function showTasksForDay(dateStr, dayNum) {
-    const todos = getTodos();
-    document.querySelectorAll('.day').forEach(el => el.classList.remove('selected'));
-    
-    const days = document.querySelectorAll('.day');
-    days.forEach(day => {
-        const span = day.querySelector('span');
-        if(span && span.innerText == dayNum) {
-            day.classList.add('selected');
-        }
-    });
+        function showTasksForDay(dateStr, dayNum) {
+            const todos = getTodos();
+            document.querySelectorAll('.day').forEach(el => el.classList.remove('selected'));
+            
+            const days = document.querySelectorAll('.day');
+            days.forEach(day => {
+                const span = day.querySelector('span');
+                if(span && span.innerText == dayNum) {
+                    day.classList.add('selected');
+                }
+            });
 
-    const monthName = new Intl.DateTimeFormat('id-ID', { month: 'long' }).format(currentNavDate);
-    document.getElementById('selected-date-text').innerText = `Tugas ${dayNum} ${monthName}:`;
+            const monthName = new Intl.DateTimeFormat('id-ID', { month: 'long' }).format(currentNavDate);
+            document.getElementById('selected-date-text').innerText = `Tugas ${dayNum} ${monthName}:`;
 
-    const list = document.getElementById('day-tasks-list');
-    const dayTasks = todos.filter(t => t.date === dateStr).sort((a, b) => a.completed - b.completed);
+            const list = document.getElementById('day-tasks-list');
+            const dayTasks = todos.filter(t => t.date === dateStr).sort((a, b) => a.completed - b.completed);
 
-    if (dayTasks.length === 0) {
-        list.innerHTML = `<p class="no-task">Tidak ada tugas. ✨</p>`;
-        return;
-    }
+            if (dayTasks.length === 0) {
+                list.innerHTML = `<p class="no-task">Tidak ada tugas. ✨</p>`;
+                return;
+            }
 
-    list.innerHTML = dayTasks.map(t => {
-        const isLate = !t.completed && t.time && (new Date(`${t.date}T${t.time}`) < new Date());
-        
-        // --- TAMPILAN WAKTU YANG DISERAGAMKAN DENGAN SELESAI.HTML ---
-        const infoWaktu = `
-            <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #eee; font-size: 11px; color: #666; line-height: 1.5;">
-                <div style="display: flex; align-items: center; gap: 5px;">
-                    🎯 Target: ${t.date || '-'} ${t.time ? '| ' + t.time : ''}
-                </div>
-                ${t.completed ? `
-                <div style="display: flex; align-items: center; gap: 5px; color: #2ecc71; font-weight: 500; margin-top: 2px;">
-                    ✨ Selesai: ${t.completedAt || '-'}
-                </div>` : `
-                <div style="display: flex; align-items: center; gap: 5px; color: ${isLate ? '#e74c3c' : '#7f8c8d'}; margin-top: 2px;">
-                    ⏳ Status: ${isLate ? 'Terlambat ⚠️' : 'Belum Selesai'}
-                </div>`}
-            </div>`;
+            list.innerHTML = dayTasks.map(t => {
+                const isLate = !t.completed && t.time && (new Date(`${t.date}T${t.time}`) < new Date());
+                
+                const infoWaktu = `
+                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border-color); font-size: 11px; color: var(--text-sub); line-height: 1.5;">
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            🎯 Target: ${t.date || '-'} ${t.time ? '| ' + t.time : ''}
+                        </div>
+                        ${t.completed ? `
+                        <div style="display: flex; align-items: center; gap: 5px; color: #2ecc71; font-weight: 500; margin-top: 2px;">
+                            ✨ Selesai: ${t.completedAt || '-'}
+                        </div>` : `
+                        <div style="display: flex; align-items: center; gap: 5px; color: ${isLate ? '#e74c3c' : 'var(--text-sub)'}; margin-top: 2px;">
+                            ⏳ Status: ${isLate ? 'Terlambat ⚠️' : 'Belum Selesai'}
+                        </div>`}
+                    </div>`;
 
-        return `
-            <div class="mini-task-card" 
-                 style="border-left: 5px solid ${t.color || '#ccc'}; border-right: ${isLate ? '3px solid #e74c3c' : 'none'};" 
-                 onclick="toggleTaskStatus(${t.id}, '${dateStr}', ${dayNum})">
-                <div class="mini-card-top">
-                    <div style="display:flex; gap:8px; align-items:center; flex: 1;">
-                        <span style="font-size: 16px;">${t.completed ? '✅' : '⏳'}</span>
-                        <strong class="${t.completed ? 'text-completed' : ''}" style="font-size: 13px; color: #2c3e50;">${t.text}</strong>
+                return `
+                    <div class="mini-task-card" 
+                         style="border-left: 5px solid ${t.color || '#ccc'}; border-right: ${isLate ? '3px solid #e74c3c' : 'none'};" 
+                         onclick="toggleTaskStatus(${t.id}, '${dateStr}', ${dayNum})">
+                        <div class="mini-card-top">
+                            <div style="display:flex; gap:8px; align-items:center; flex: 1;">
+                                <span style="font-size: 16px;">${t.completed ? '✅' : '⏳'}</span>
+                                <strong class="${t.completed ? 'text-completed' : ''}" style="font-size: 13px;">${t.text}</strong>
+                            </div>
+                            <span class="status-tag ${t.completed ? 'selesai' : 'aktif'}">${t.completed ? 'Selesai' : 'Aktif'}</span>
+                        </div>
+                        ${infoWaktu}
                     </div>
-                    <span class="status-tag ${t.completed ? 'selesai' : 'aktif'}">${t.completed ? 'Selesai' : 'Aktif'}</span>
-                </div>
-                ${infoWaktu}
-            </div>
-        `;
-    }).join('');
-}
+                `;
+            }).join('');
+        }
+
         function toggleTaskStatus(id, dateStr, dayNum) {
             let todos = getTodos();
             const now = new Intl.DateTimeFormat('id-ID', { day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' }).format(new Date());
@@ -567,11 +631,15 @@ function showTasksForDay(dateStr, dayNum) {
             }
         }
 
-        /* --- INITIALIZE --- */
         window.onload = () => {
+            applyTheme();
             renderCalendar();
             updateSidebarBadges();
         };
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'theme') applyTheme();
+        });
     </script>
 </body>
 

@@ -6,13 +6,47 @@
     <title>Daftar Tugas Aktif</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#e67e22"><style>
-        :root { --primary: #e67e22; --bg-gradient: linear-gradient(135deg, #f1c40f 0%, #ff8c00 100%); }
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#e67e22">
+    <style>
+        /* --- MODIFIKASI ROOT UNTUK TEMA --- */
+        :root { 
+            --primary: #e67e22; 
+            --bg-gradient: linear-gradient(135deg, #f1c40f 0%, #ff8c00 100%); 
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #2c3e50;
+            --task-item-bg: #ffffff;
+            --sidebar-bg: #2c3e50;
+            --input-border: #ddd;
+            --stat-bg: #fdf2e9;
+        }
+
+        /* --- MODE GELAP --- */
+        body.dark-mode {
+            --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --card-bg: #1f4068;
+            --text-color: #e0e0e0;
+            --task-item-bg: #16213e;
+            --sidebar-bg: #0f3460;
+            --input-border: #34495e;
+            --stat-bg: rgba(230, 126, 34, 0.1);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--bg-gradient); min-height: 100vh; padding: 20px; display: flex; justify-content: center; }
+        
+        body { 
+            background: var(--bg-gradient); 
+            min-height: 100vh; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; /* Mengatur arah ke bawah agar footer di bawah */
+            align-items: center; 
+            color: var(--text-color); 
+            transition: 0.3s; 
+        }
 
         .menu-btn { position: fixed; top: 20px; left: 20px; font-size: 24px; cursor: pointer; z-index: 1000; background: white; padding: 5px 12px; border-radius: 12px; color: #d35400; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100%; background: #2c3e50; transition: 0.4s; z-index: 999; padding-top: 80px; }
+        .sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100%; background: var(--sidebar-bg); transition: 0.4s; z-index: 999; padding-top: 80px; }
         .sidebar.active { left: 0; }
         .sidebar a { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; color: #ecf0f1; text-decoration: none; border-bottom: 1px solid #34495e; font-size: 14px; }
         .sidebar a:hover { background: #34495e; }
@@ -21,31 +55,31 @@
         .badge-aktif { background: #e67e22; }
         .badge-selesai { background: #2ecc71; }
 
-        .container { width: 100%; max-width: 550px; margin-top: 60px; background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); height: fit-content; }
+        .container { width: 100%; max-width: 550px; margin-top: 60px; background: var(--card-bg); padding: 30px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); height: fit-content; transition: 0.3s; }
         
         .header-section { text-align: center; margin-bottom: 15px; }
-        .header-section h2 { color: #d35400; }
+        .header-section h2 { color: var(--primary); }
 
         .controls-section { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
         .filter-row { display: flex; gap: 10px; }
         
         .search-box input, .filter-box select, .filter-box input { 
-            width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ddd; 
+            width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--input-border); 
             font-size: 12px; outline: none; font-family: 'Poppins', sans-serif; height: 40px;
+            background: var(--task-item-bg); color: var(--text-color);
         }
-        .search-box input:focus, .filter-box input:focus { border-color: #e67e22; }
+        .search-box input:focus, .filter-box input:focus { border-color: var(--primary); }
 
         .month-header { background: #e8f5e9; color: #27ae60; padding: 8px 15px; border-radius: 10px; margin: 20px 0 10px; font-weight: 600; border-left: 4px solid #2ecc71; font-size: 14px; }
         
-        .stats-box { background: #fdf2e9; padding: 8px 15px; border-radius: 12px; margin: 0 auto 20px auto; display: flex; justify-content: center; border: 1px solid #f9ebe0; width: fit-content; }
+        .stats-box { background: var(--stat-bg); padding: 8px 15px; border-radius: 12px; margin: 0 auto 20px auto; display: flex; justify-content: center; border: 1px solid var(--input-border); width: fit-content; }
         .stat-item { text-align: center; display: flex; align-items: center; gap: 10px; }
-        .stat-item span { font-size: 18px; font-weight: 600; color: #e67e22; }
+        .stat-item span { font-size: 18px; font-weight: 600; color: var(--primary); }
         .stat-item label { font-size: 11px; text-transform: uppercase; color: #7f8c8d; font-weight: 600; }
 
-        .task-card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; border-left: 8px solid #ccc; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.3s; position: relative; overflow: hidden; }
+        .task-card { background: var(--task-item-bg); padding: 15px; border-radius: 15px; margin-bottom: 12px; border-left: 8px solid #ccc; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.3s; position: relative; overflow: hidden; color: var(--text-color); }
         
-        /* CSS Tambahan untuk Tugas Terlambat */
-        .task-card.late-task { background: #fff5f5; border-right: 4px solid #e74c3c; }
+        .task-card.late-task { background: rgba(231, 76, 60, 0.1); border-right: 4px solid #e74c3c; }
         .late-label { background: #e74c3c; color: white; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; display: inline-block; margin-bottom: 5px; animation: pulse 2s infinite; }
         
         @keyframes pulse {
@@ -55,7 +89,7 @@
         }
 
         .category-tag { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 0; display: block; margin-bottom: 2px; }
-        .task-info strong { display: block; color: #2c3e50; font-size: 15px; max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+        .task-info strong { display: block; color: var(--text-color); font-size: 15px; max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
         .task-info small { color: #7f8c8d; font-size: 11px; }
         
         .action-btns { display: flex; gap: 5px; }
@@ -63,20 +97,30 @@
         .btn-check { background: #2ecc71; }
         .btn-edit { background: #3498db; }
         .btn-delete { background: #e74c3c; }
-        .btn-check:hover, .btn-edit:hover, .btn-delete:hover { transform: scale(1.1); }
-
-        .empty-state { text-align: center; padding: 40px 0; color: #95a5a6; }
 
         .toast {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
             background: #2c3e50; color: white; padding: 12px 25px; border-radius: 12px;
-            font-size: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transition: 0.5s; z-index: 9999; visibility: hidden; opacity: 0;
+            font-size: 14px; transition: 0.5s; z-index: 9999; visibility: hidden; opacity: 0;
         }
         .toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* --- STYLES COPYRIGHT --- */
+        .footer-copyright {
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            padding: 25px 10px;
+            font-size: 12px;
+            color: var(--text-color);
+            opacity: 0.7;
+            width: 100%;
+            margin-top: auto; /* Memaksa footer ke bagian bawah layar */
+        }
     </style>
 </head>
 <body>
+
+    <audio id="alarm-audio" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto" loop></audio>
 
     <div id="toast-notif" class="toast">Berhasil! ✨</div>
     <div class="menu-btn" onclick="toggleMenu()">☰</div>
@@ -116,7 +160,7 @@
                     </select>
                 </div>
                 <div class="filter-box" style="flex: 1;">
-                    <input type="month" id="date-filter" onchange="loadActiveTasks()" title="Cari berdasarkan bulan dan tahun">
+                    <input type="month" id="date-filter" onchange="loadActiveTasks()">
                 </div>
             </div>
         </div>
@@ -131,7 +175,24 @@
         <div id="active-list"></div>
     </div>
 
+    <div class="footer-copyright">
+        &copy; 2026 Innes Putri Danurista. To-Do List Application. All Rights Reserved.
+    </div>
+
     <script>
+    // --- LOGIKA TEMA ---
+    function applyTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+    }
+    window.addEventListener('storage', (e) => { if (e.key === 'theme') applyTheme(); });
+    applyTheme();
+
+    // --- LOGIKA UTAMA ---
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
 
     function showToast(message) {
@@ -172,7 +233,7 @@
         const dateFilterVal = document.getElementById('date-filter').value; 
         
         const todos = JSON.parse(localStorage.getItem('todos') || '[]');
-        const now = new Date(); // Waktu saat ini
+        const now = new Date();
         
         let activeTasks = todos.filter(t => {
             const matchesSearch = t.text.toLowerCase().includes(searchVal);
@@ -197,14 +258,9 @@
         document.getElementById('count-total').innerText = activeTasks.length;
 
         if (activeTasks.length === 0) {
-    listContainer.innerHTML = `
-        <div class="empty-state">
-            <div class="icon">📝</div>
-            <p>Belum ada tugas aktif</p>
-            <span class="sub-text">Klik menu "Tambah Tugas" untuk memulai hari produktifmu!</span>
-        </div>`;
-    return;
-}
+            listContainer.innerHTML = `<div class="empty-state"><div class="icon">📝</div><p>Belum ada tugas aktif</p></div>`;
+            return;
+        }
 
         listContainer.innerHTML = '';
         let currentMonthHeader = "";
@@ -219,17 +275,14 @@
                 listContainer.appendChild(header);
             }
 
-            // --- LOGIKA PENGECEKAN TERLAMBAT ---
             let isLate = false;
             if (t.date) {
                 const taskDeadline = new Date(`${t.date}T${t.time || '23:59'}`);
-                if (taskDeadline < now) {
-                    isLate = true;
-                }
+                if (taskDeadline < now) isLate = true;
             }
 
             const div = document.createElement('div');
-            div.className = `task-card ${isLate ? 'late-task' : ''}`; // Tambah class late-task
+            div.className = `task-card ${isLate ? 'late-task' : ''}`;
             div.style.borderLeftColor = t.color;
             const categoryLabel = getCategoryName(t.color);
 
@@ -241,12 +294,11 @@
                     </div>
                     <strong>${t.text}</strong>
                     <small>📅 ${t.date || '-'} | ⏰ ${t.time || '--:--'}</small>
-                    ${isLate ? `<div style="font-size: 10px; color: #e74c3c; margin-top: 5px; font-weight: 500;">Tenggat waktu sudah lewat!</div>` : ''}
                 </div>
                 <div class="action-btns">
-                    <button class="btn-edit" onclick="editTask(${t.id}, '${t.text.replace(/'/g, "\\'")}')" title="Edit">✏️</button>
-                    <button class="btn-check" onclick="completeTask(${t.id})" title="Selesai">✔️</button>
-                    <button class="btn-delete" onclick="deleteTask(${t.id})" title="Hapus">🗑️</button>
+                    <button class="btn-edit" onclick="editTask(${t.id}, '${t.text.replace(/'/g, "\\'")}')">✏️</button>
+                    <button class="btn-check" onclick="completeTask(${t.id})">✔️</button>
+                    <button class="btn-delete" onclick="deleteTask(${t.id})">🗑️</button>
                 </div>
             `;
             listContainer.appendChild(div);
@@ -254,18 +306,13 @@
     }
 
     window.editTask = (id, taskName) => {
-        if (confirm(`Edit tugas: "${taskName}"?`)) {
-            window.location.href = `index.html?edit=${id}`;
-        }
+        if (confirm(`Edit tugas: "${taskName}"?`)) window.location.href = `index.html?edit=${id}`;
     };
 
     window.completeTask = (id) => {
-        if(confirm("Luar biasa! Apakah tugas ini sudah benar-benar selesai? ✨")) {
+        if(confirm("Luar biasa! Apakah sudah selesai? ✨")) {
             const todos = JSON.parse(localStorage.getItem('todos'));
-            const nowStr = new Date().toLocaleString('id-ID', { 
-                day:'numeric', month:'short', year:'numeric', 
-                hour:'2-digit', minute:'2-digit' 
-            });
+            const nowStr = new Date().toLocaleString('id-ID', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
             const updated = todos.map(t => t.id === id ? {...t, completed:true, actualFinish:nowStr} : t);
             localStorage.setItem('todos', JSON.stringify(updated));
             showToast("Tugas Selesai! ✅");
@@ -283,6 +330,58 @@
         }
     };
 
+    // --- FUNGSI ALARM ---
+    function checkAlarms() {
+        const todos = JSON.parse(localStorage.getItem('todos') || '[]');
+        const alarmSound = document.getElementById('alarm-audio');
+        const now = new Date();
+        
+        const currentDate = now.toISOString().split('T')[0]; 
+        const currentTime = now.getHours().toString().padStart(2, '0') + ":" + 
+                          now.getMinutes().toString().padStart(2, '0'); 
+        
+        let updated = false;
+
+        todos.forEach(task => {
+            if (!task.completed && task.date === currentDate && task.time === currentTime && !task.notified) {
+                alarmSound.play().catch(e => {
+                    console.log("Autoplay diblokir. Klik halaman satu kali agar suara aktif.");
+                });
+
+                if (Notification.permission === "granted") {
+                    const notif = new Notification("⏰ Waktunya Tugas!", { 
+                        body: task.text, 
+                        icon: 'https://cdn-icons-png.flaticon.com/512/906/906334.png' 
+                    });
+                    
+                    notif.onclick = () => {
+                        alarmSound.pause();
+                        window.focus();
+                    };
+                }
+
+                setTimeout(() => {
+                    alert(`🚨 ALARM TUGAS: ${task.text}`);
+                    alarmSound.pause();
+                    alarmSound.currentTime = 0;
+                }, 500);
+
+                task.notified = true;
+                updated = true;
+            }
+        });
+        
+        if (updated) {
+            localStorage.setItem('todos', JSON.stringify(todos));
+            loadActiveTasks();
+        }
+    }
+
+    if ("Notification" in window) {
+        if (Notification.permission !== "granted") Notification.requestPermission();
+    }
+
+    setInterval(checkAlarms, 30000);
     loadActiveTasks();
     </script>
 </body>

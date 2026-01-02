@@ -6,33 +6,68 @@
     <title>Tambah/Edit Tugas</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
     <meta name="theme-color" content="#e67e22">
     <style>
-        :root { --primary: #e67e22; --bg-gradient: linear-gradient(135deg, #f1c40f 0%, #ff8c00 100%); }
+        /* --- MODIFIKASI ROOT UNTUK TEMA --- */
+        :root { 
+            --primary: #e67e22; 
+            --bg-gradient: linear-gradient(135deg, #f1c40f 0%, #ff8c00 100%); 
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #2c3e50;
+            --input-border: #f9ebe0;
+            --sidebar-bg: #2c3e50;
+        }
+
+        /* --- MODE GELAP --- */
+        body.dark-mode {
+            --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --card-bg: #1f4068;
+            --text-color: #e0e0e0;
+            --input-border: #34495e;
+            --sidebar-bg: #0f3460;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--bg-gradient); min-height: 100vh; padding: 20px; display: flex; justify-content: center; align-items: center; }
+        
+        body { 
+            background: var(--bg-gradient); 
+            min-height: 100vh; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; /* Mengatur arah kolom agar copyright di bawah */
+            justify-content: center; 
+            align-items: center; 
+            color: var(--text-color); 
+            transition: 0.3s; 
+        }
         
         .menu-btn { position: fixed; top: 20px; left: 20px; font-size: 24px; cursor: pointer; z-index: 1000; background: white; padding: 5px 12px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); color: #d35400; }
-        .sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100%; background: #2c3e50; transition: 0.4s; z-index: 999; padding-top: 80px; }
+        .sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100%; background: var(--sidebar-bg); transition: 0.4s; z-index: 999; padding-top: 80px; }
         .sidebar.active { left: 0; }
         
         .sidebar a { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; color: #ecf0f1; text-decoration: none; border-bottom: 1px solid #34495e; font-size: 14px; }
-        .sidebar a:hover { background: #34495e; }
         
         .badge { color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; min-width: 20px; text-align: center; }
         .badge-aktif { background: #e67e22; }
         .badge-selesai { background: #2ecc71; }
         
-        .container { width: 100%; max-width: 480px; background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
-        header h2 { text-align: center; color: #d35400; margin-bottom: 20px; }
+        .container { width: 100%; max-width: 480px; background: var(--card-bg); padding: 30px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); transition: 0.3s; margin-top: auto; margin-bottom: auto; }
+        header h2 { text-align: center; color: var(--primary); margin-bottom: 20px; }
         
-        label { font-size: 12px; color: #d35400; font-weight: 600; margin-bottom: 5px; display: block; }
-        .input-group input, .input-group select { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #f9ebe0; border-radius: 10px; outline: none; transition: 0.3s; font-family: 'Poppins', sans-serif; }
+        label { font-size: 12px; color: var(--primary); font-weight: 600; margin-bottom: 5px; display: block; }
+        
+        .input-group input, .input-group select { 
+            width: 100%; padding: 12px; margin-bottom: 15px; 
+            border: 2px solid var(--input-border); 
+            background: transparent;
+            color: var(--text-color);
+            border-radius: 10px; outline: none; transition: 0.3s; 
+        }
         .input-group input:focus, .input-group select:focus { border-color: var(--primary); }
         
         .row { display: flex; gap: 10px; }
         #add-btn { width: 100%; padding: 14px; background: linear-gradient(to right, #f39c12, #e67e22); border: none; color: white; border-radius: 12px; font-weight: 600; cursor: pointer; margin-top: 10px; font-size: 16px; box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3); transition: 0.3s; }
-        #add-btn:active { transform: scale(0.98); }
         #cancel-btn { width: 100%; padding: 10px; background: #bdc3c7; border: none; color: white; border-radius: 12px; font-weight: 500; cursor: pointer; margin-top: 10px; display: none; }
 
         .toast {
@@ -42,6 +77,17 @@
             transition: 0.5s; z-index: 9999; visibility: hidden; opacity: 0;
         }
         .toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* --- STYLES COPYRIGHT --- */
+        .footer-copyright {
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: var(--text-color);
+            opacity: 0.8;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -89,7 +135,27 @@
         </div>
     </div>
 
+    <div class="footer-copyright">
+        &copy; 2026 Innes Putri Danurista. To-Do List Application. All Rights Reserved.
+    </div>
+
     <script>
+        // --- LOGIKA TEMA ---
+        function applyTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+        }
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'theme') applyTheme();
+        });
+
+        applyTheme();
+
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
 
         const input = document.getElementById('todo-input');
@@ -105,32 +171,28 @@
         const calendarDate = urlParams.get('date');
         let isEditMode = false;
 
-        // --- PENDAFTARAN SERVICE WORKER ---
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-            .then(reg => {
-                console.log('Service Worker berhasil didaftarkan! Scope:', reg.scope);
-            })
-            .catch(err => {
-                console.error('Pendaftaran Service Worker gagal:', err);
-            });
-    });
-}
+        document.addEventListener('DOMContentLoaded', () => {
+            if ("Notification" in window) {
+                Notification.requestPermission();
+            }
+        });
 
-        // Visual feedback saat memilih warna
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => console.error(err));
+            });
+        }
+
         function updateSelectStyle() {
             colorInput.style.borderLeft = `8px solid ${colorInput.value}`;
             colorInput.style.paddingLeft = "15px";
         }
 
-        // Jalankan style awal
         updateSelectStyle();
 
         if (calendarDate && !editId) {
             dateInput.value = calendarDate;
             input.focus();
-            setTimeout(() => { showToast("Tanggal dipilih: " + calendarDate + " 📅"); }, 500);
         }
 
         if (editId) {

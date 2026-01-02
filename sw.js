@@ -40,3 +40,18 @@ self.addEventListener('fetch', event => {
         })
     );
 });
+
+// sw.js
+self.addEventListener('push', (event) => {
+    const data = event.data.json();
+    self.registration.showNotification(data.title, {
+        body: data.body,
+        icon: 'https://cdn-icons-png.flaticon.com/512/906/906334.png'
+    });
+});
+
+// Pengecekan interval setiap 1 menit (Logika sederhana)
+setInterval(() => {
+    // Di PWA murni, pengecekan waktu biasanya dilakukan di file JS utama
+    // karena Service Worker memiliki batasan akses ke localStorage di beberapa browser
+}, 60000);
