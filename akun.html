@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akun Pengguna</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root { 
+            --primary: #e67e22; 
+            --bg-gradient: linear-gradient(135deg, #f1c40f 0%, #ff8c00 100%); 
+            --soft-pink: #ff857d; 
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #2c3e50;
+            --sidebar-bg: #2c3e50;
+        }
+
+        /* --- DARK MODE OVERRIDE --- */
+        body.dark-mode {
+            --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --card-bg: #1f4068;
+            --text-color: #e0e0e0;
+            --sidebar-bg: #0f3460;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg-gradient); min-height: 100vh; padding: 20px; display: flex; justify-content: center; color: var(--text-color); transition: 0.3s; }
+        
+        /* Sidebar & Menu */
+        .menu-btn { position: fixed; top: 20px; left: 20px; font-size: 24px; cursor: pointer; z-index: 1000; background: white; padding: 5px 12px; border-radius: 12px; color: #d35400; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100%; background: var(--sidebar-bg); transition: 0.4s; z-index: 999; padding-top: 80px; }
+        .sidebar.active { left: 0; }
+        .sidebar a { display: flex; justify-content: space-between; align-items: center; padding: 18px 25px; color: #ecf0f1; text-decoration: none; border-bottom: 1px solid #34495e; }
+        
+        .badge { color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; min-width: 20px; text-align: center; }
+        .badge-aktif { background: #e67e22; }
+        .badge-selesai { background: #2ecc71; }
+
+        /* Container Profile */
+        .container { width: 100%; max-width: 480px; margin-top: 80px; background: var(--card-bg); padding: 40px 30px; border-radius: 30px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.15); height: fit-content; border: 4px solid white; }
+        
+        .avatar-wrapper { position: relative; width: 110px; height: 110px; margin: 0 auto 20px; }
+        .avatar { width: 100%; height: 100%; background: #fdf2e9; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 55px; border: 4px solid var(--primary); object-fit: cover; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .upload-hint { position: absolute; bottom: 0; right: 0; background: var(--primary); color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 3px solid white; font-size: 16px; transition: 0.3s; }
+
+        .user-display-name { color: var(--primary); font-size: 24px; font-weight: 600; cursor: pointer; display: inline-block; }
+        
+        .bio-box { background: rgba(255, 250, 240, 0.1); padding: 15px; border-radius: 20px; margin: 20px auto; border: 2px dashed var(--primary); font-size: 14px; font-style: italic; cursor: pointer; }
+
+        /* Stats */
+        .stats-container { display: flex; gap: 15px; margin: 25px 0; }
+        .stat-card { flex: 1; background: var(--card-bg); padding: 15px; border-radius: 20px; border: 2px solid #f9ebe0; transition: 0.3s; cursor: pointer; }
+        
+        /* New Features Style */
+        .settings-section { margin-top: 20px; text-align: left; background: rgba(0,0,0,0.05); padding: 20px; border-radius: 20px; }
+        .settings-section h4 { margin-bottom: 15px; font-size: 14px; color: var(--primary); text-transform: uppercase; }
+        
+        .btn-action { width: 100%; padding: 12px; border-radius: 12px; border: none; margin-bottom: 10px; cursor: pointer; font-weight: 600; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-dark { background: #34495e; color: white; }
+        .btn-backup { background: #3498db; color: white; }
+        .btn-restore { background: #9b59b6; color: white; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10000; }
+        .modal-content { background: white; width: 90%; max-width: 380px; padding: 30px; border-radius: 25px; text-align: center; color: #333; }
+        .modal-content input, .modal-content textarea { width: 100%; padding: 12px; margin: 15px 0; border-radius: 10px; border: 1px solid #ddd; }
+        
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: #2c3e50; color: white; padding: 12px 25px; border-radius: 50px; font-size: 14px; transition: 0.5s; z-index: 10001; opacity: 0; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+
+    <div id="toast-notif" class="toast">Berhasil! ✨</div>
+
+    <div class="modal-overlay" id="modal-edit">
+        <div class="modal-content">
+            <h3 id="modal-title">Edit ✨</h3>
+            <div id="modal-body"></div>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="closeModal()" style="flex:1; padding:10px; border-radius:10px; border:none;">Batal</button>
+                <button onclick="saveFromModal()" style="flex:1; padding:10px; border-radius:10px; border:none; background:var(--primary); color:white;">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu-btn" onclick="toggleMenu()">☰</div>
+    
+    <div class="sidebar" id="sidebar">
+        <a href="index.html">➕ Tambah Tugas</a>
+        <a href="aktif.html"><span>⏳ Tugas Aktif</span><span class="badge badge-aktif" id="side-badge-aktif">0</span></a>
+        <a href="selesai.html"><span>✅ Tugas Selesai</span><span class="badge badge-selesai" id="side-badge-selesai">0</span></a>
+        <a href="kalender.html">📅 Kalender Tugas</a>
+        <a href="catatan.html">📝 Catatan Harian</a>
+        <a href="akun.html" style="background: #34495e;">👤 Akun Pengguna</a>
+    </div>
+
+    <div class="container">
+        <div class="avatar-wrapper">
+            <div id="profile-img-container" class="avatar">👤</div>
+            <label for="file-input" class="upload-hint">📷</label>
+            <input type="file" id="file-input" accept="image/*" onchange="previewImage(event)">
+        </div>
+
+        <h3 class="user-display-name" onclick="openEdit('name')">
+            <span id="display-name">Pengguna</span> ✨
+        </h3>
+        
+        <div class="bio-box" id="display-bio" onclick="openEdit('bio')">"Klik di sini untuk menulis bio..."</div>
+
+        <div class="stats-container">
+            <div class="stat-card" onclick="window.location.href='aktif.html'">
+                <h4 id="stat-aktif">0</h4><p>Aktif</p>
+            </div>
+            <div class="stat-card" onclick="window.location.href='selesai.html'">
+                <h4 id="stat-selesai">0</h4><p>Selesai</p>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h4>Pengaturan Aplikasi</h4>
+            <button class="btn-action btn-dark" onclick="toggleDarkMode()" id="dark-btn">🌙 Mode Malam</button>
+            
+            <h4 style="margin-top:20px;">Ketahanan Data</h4>
+            <button class="btn-action btn-backup" onclick="exportData()">📤 Cadangkan Data (JSON)</button>
+            <button class="btn-action btn-restore" onclick="document.getElementById('importFile').click()">📥 Pulihkan Data</button>
+            <input type="file" id="importFile" style="display:none" onchange="importData(event)">
+        </div>
+    </div>
+
+    <script>
+        // --- PWA Service Worker Registration ---
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log("SW failed", err));
+        }
+
+        let currentType = '';
+
+        function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast-notif');
+            t.innerText = msg; t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // --- DARK MODE LOGIC ---
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateDarkBtnText(isDark);
+        }
+
+        function updateDarkBtnText(isDark) {
+            document.getElementById('dark-btn').innerHTML = isDark ? '☀️ Mode Terang' : '🌙 Mode Malam';
+        }
+
+        // --- BACKUP & RESTORE LOGIC ---
+        function exportData() {
+            const data = {
+                todos: JSON.parse(localStorage.getItem('todos') || '[]'),
+                notes: JSON.parse(localStorage.getItem('notes') || '[]'),
+                username: localStorage.getItem('username'),
+                userbio: localStorage.getItem('userbio'),
+                profileImage: localStorage.getItem('profileImage')
+            };
+            const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup_todo_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            showToast("Data berhasil diekspor! 📁");
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if(confirm("Timpa semua data saat ini dengan cadangan ini?")) {
+                        localStorage.setItem('todos', JSON.stringify(data.todos || []));
+                        localStorage.setItem('notes', JSON.stringify(data.notes || []));
+                        localStorage.setItem('username', data.username || 'Pengguna');
+                        localStorage.setItem('userbio', data.userbio || '');
+                        if(data.profileImage) localStorage.setItem('profileImage', data.profileImage);
+                        showToast("Data berhasil dipulihkan! 🔄");
+                        setTimeout(() => location.reload(), 1500);
+                    }
+                } catch (err) { alert("File tidak valid!"); }
+            };
+            reader.readAsText(file);
+        }
+
+        // --- EXISTING LOGIC ---
+        function openEdit(type) {
+            currentType = type;
+            const modal = document.getElementById('modal-edit');
+            const body = document.getElementById('modal-body');
+            modal.style.display = 'flex';
+            if(type === 'name') {
+                body.innerHTML = `<input type="text" id="modal-input" value="${localStorage.getItem('username') || ''}">`;
+            } else {
+                body.innerHTML = `<textarea id="modal-input" rows="3">${(localStorage.getItem('userbio') || '').replace(/"/g,'')}</textarea>`;
+            }
+        }
+
+        function closeModal() { document.getElementById('modal-edit').style.display = 'none'; }
+
+        function saveFromModal() {
+            const val = document.getElementById('modal-input').value;
+            if(currentType === 'name') {
+                localStorage.setItem('username', val);
+            } else {
+                localStorage.setItem('userbio', `"${val}"`);
+            }
+            updateData();
+            closeModal();
+            showToast("Tersimpan! ✨");
+        }
+
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                localStorage.setItem('profileImage', reader.result);
+                updateData();
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function updateData() {
+            const todos = JSON.parse(localStorage.getItem('todos') || '[]');
+            const aktif = todos.filter(t => !t.completed).length;
+            const selesai = todos.filter(t => t.completed).length;
+
+            document.getElementById('side-badge-aktif').innerText = aktif;
+            document.getElementById('side-badge-selesai').innerText = selesai;
+            document.getElementById('stat-aktif').innerText = aktif;
+            document.getElementById('stat-selesai').innerText = selesai;
+
+            document.getElementById('display-name').innerText = localStorage.getItem('username') || 'Pengguna';
+            document.getElementById('display-bio').innerText = localStorage.getItem('userbio') || '"Belum ada bio"';
+            
+            const img = localStorage.getItem('profileImage');
+            if(img) document.getElementById('profile-img-container').innerHTML = `<img src="${img}" style="width:100%; height:100%; object-fit:cover;">`;
+        }
+
+        window.onload = () => {
+            updateData();
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                updateDarkBtnText(true);
+            }
+        };
+    </script>
+</body>
+</html>
